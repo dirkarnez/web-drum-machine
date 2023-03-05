@@ -188,8 +188,11 @@ function writeString (view, offset, string) {
                           type: 'audio/wav'
                         })
 
-                        var url = window.URL.createObjectURL(blob)
-                        anchor.href = url
+                        var url = window.URL.createObjectURL(blob);
+                        var anchor = document.createElement('a');
+                        document.body.appendChild(anchor);
+                        anchor.style = 'display: none';
+                        anchor.href = url;
                         anchor.download = 'audio.wav'
                         anchor.click()
                         window.URL.revokeObjectURL(url)
