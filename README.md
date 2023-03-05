@@ -1,5 +1,5 @@
-web-drum-machine
-================
+[web-drum-machine](https://dirkarnez.github.io/web-drum-machine/)
+=================================================================
 A code-based drum machine based on:
 - [Shiny Happy WebAudio MIDI-fied Drum Machine](https://webaudiodemos.appspot.com/MIDIDrums/index.html) 
   - [cwilso/MIDIDrums: MIDI version of Shiny Drum Machine](https://github.com/cwilso/MIDIDrums)
