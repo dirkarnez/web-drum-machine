@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://github.com/dirkarnez/webpack-umd-action/releases/download/standardized-audio-context.25.3.36/standardized-audio-context.25.3.36.min.js"></script>
+</head>
+
+<body>
+    <button id="set-up-button">set up</button>
+    <button id="play-beep-button">beep</button>
+    <script>
+        // https://www.musicca.com/drums
+        const drumset = [
+            "bass.mp3" //https://www.musicca.com/files/scripts/drumkit/sound/bass.mp3
+        ];
+
+        const { AudioContext, AudioWorkletNode, GainNode, OscillatorNode, isSupported } = window.standardizedAudioContext;
+
+        const playBeepButton = document.getElementById("play-beep-button");
+        const setUpButton = document.getElementById("set-up-button");
+
+        const channels = 2;
+
+        function silence(audioBuffer, start, seconds, sampleRate) {
+            for (let channel = 0; channel < channels; channel++) {
+                // This gives us the actual array that contains the data
+                const nowBuffering = audioBuffer.getChannelData(channel);
+                for (let i = start*sampleRate; i < seconds * sampleRate; i++) {
+                    // Math.random() is in [0; 1.0]
+                    // audio needs to be in [-1.0; 1.0]
+                    nowBuffering[i] = 0;
+                }
+            }
+        }
+
+        function fill(audioBufferSource, audioBufferTarget, start, seconds, sampleRate) {
+            for (let channel = 0; channel < channels; channel++) {
+                // This gives us the actual array that contains the data
+                const source = audioBufferSource.getChannelData(channel);
+                const nowBuffering = audioBufferTarget.getChannelData(channel);
+
+                for (let j = 0; j < seconds * sampleRate; j++) {
+                    nowBuffering[(start*sampleRate) + j] = source[j];
+                }
+            }
+        }
+
+        let audioContext;
+
+        function setUp(buffer) {
+            //const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            // Create an empty ten second stereo buffer at the
+            // sample rate of the AudioContext
+            const frameCount = audioContext.sampleRate * 5.0;
+
+            const myArrayBuffer = audioContext.createBuffer(channels, frameCount, audioContext.sampleRate);
+
+            playBeepButton.addEventListener("click", () => {
+                // const oscillatorNode = new OscillatorNode(audioContext, { frequency: 500 });
+
+                // oscillatorNode.onended = () => oscillatorNode.disconnect();
+                // oscillatorNode.connect(audioContext.destination);
+
+                // oscillatorNode.start();
+                // oscillatorNode.stop(audioContext.currentTime + 0.5);
+
+                
+
+
+                for (var counter = 0; counter < 10; counter++) {
+                    fill(buffer, myArrayBuffer, counter, 0.2, audioContext.sampleRate);
+                    silence(myArrayBuffer, (0.2) * (counter + 1), 0.2, audioContext.sampleRate);
+                }
+                
+                        // const anotherArray0 = new Float32Array(buffer.length);
+                        // const anotherArray1 = new Float32Array(buffer.length);
+
+                        // anotherArray0
+
+                        // buffer.getChannelData(0);
+                        // buffer.getChannelData(1);
+                        
+                        // myArrayBuffer
+                        // myArrayBuffer
+
+
+                        
+
+                        const source = audioContext.createBufferSource();
+                        // Set the buffer in the AudioBufferSourceNode
+                        source.buffer = myArrayBuffer;
+                        // Connect the AudioBufferSourceNode to the
+                        // destination so we can hear the sound
+                        source.connect(audioContext.destination);
+
+                        source.onended = () => {
+                            alert("White noise finished.");
+                        };
+                        // start the source playing
+                        source.start();
+            });
+
+            alert("OK!");
+        }
+
+
+        setUpButton.addEventListener("click", () => {
+            isSupported()
+                .then(isBrowserSupported => {
+                    if (isBrowserSupported) {
+                        audioContext = new AudioContext();
+
+                        return fetch(`/${drumset[0]}`)
+                            .then(response => response.arrayBuffer())
+                            .then(data => new Promise(res => {
+                                    audioContext.decodeAudioData(data, buffer => {
+                                        // buffer
+                                        // silence
+                                        // buffer
+                                        // silence
+                                        // buffer
+                                        // silence
+                                        // buffer
+                                        // silence
+                                        // buffer.duration
+                                        res(buffer);
+                                    });
+                                })
+                            ).then(buffer => {
+                                setUp(buffer);
+                            })
+                    } else {
+                        alert("Not supported");
+                    }
+                })
+                .catch(err => {
+                    alert("Error");
+                });
+        });
+    </script>
+</body>
+
+</html>
