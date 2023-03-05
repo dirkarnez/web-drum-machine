@@ -124,7 +124,7 @@
                     if (isBrowserSupported) {
                         audioContext = new AudioContext();
 
-                        return fetch(`/${drumset[0]}`)
+                        return fetch(`./${drumset[0]}`)
                             .then(response => response.arrayBuffer())
                             .then(data => new Promise(res => {
                                     audioContext.decodeAudioData(data, buffer => {
